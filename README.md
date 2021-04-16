@@ -12,10 +12,10 @@ component resource that provisions a public AWS S3 HTML page.
 
 The important pieces include:
 
-- [schema.json](schema.json) declaring the StaticPage interface
+- [schema.json](schema.json) declaring the `StaticPage` interface
 
 - [xyz_provider](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py) package
-  implementing StaticPage using typical Pulumi Python code
+  implementing `StaticPage` using typical Pulumi Python code
 
 From here, the build generates:
 
@@ -23,8 +23,13 @@ From here, the build generates:
 
 - `pulumi-resource-xyz` Pulumi plugin (under `bin/`)
 
-Users can deploy StaticPage instances in their language of choice, as
-seen in the [TypeScript example](examples/simple/index.ts).
+Users can deploy `StaticPage` instances in their language of choice,
+as seen in the [TypeScript example](examples/simple/index.ts). Only
+two things are needed to run `pulumi up`:
+
+- the code needs to reference the `xyz` SDK package
+
+- `pulumi-resource-xyz` needs to be on `PATH` for `pulumi` to find it
 
 
 ## Prerequisites
@@ -50,6 +55,9 @@ While the plugin must follow this naming convention, the SDK package
 naming can be custom.
 
 ## Packaging
+
+TODO details on tarball packaging. Ideally Makefile contains targets
+for generating the tarballs.
 
 
 ## StaticPage Example

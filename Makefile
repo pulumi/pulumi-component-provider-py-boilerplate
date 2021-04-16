@@ -14,20 +14,13 @@ generate:: gen_go_sdk gen_dotnet_sdk gen_nodejs_sdk gen_python_sdk
 
 build:: build_provider build_dotnet_sdk build_nodejs_sdk build_python_sdk
 
-install:: install_provider install_dotnet_sdk install_nodejs_sdk
+install:: install_dotnet_sdk install_nodejs_sdk
 
 
 # Provider
 
 build_provider::
 	cd provider/cmd/${PROVIDER}/ && make
-
-install_provider:: build_provider
-	mkdir -p bin && rm -rf bin/*
-	cp -a provider/cmd/${PROVIDER}/bin/. bin/
-	cd provider/cmd/${PROVIDER}/ && cp ${PROVIDER} ${PROVIDER}.cmd PulumiPlugin.yaml ../../../bin/
-	cd bin && yarn install
-	chmod +x bin/${PROVIDER}
 
 
 # Go SDK
