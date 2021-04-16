@@ -24,7 +24,7 @@ From here, the build generates:
 - `pulumi-resource-xyz` Pulumi plugin (under `bin/`)
 
 Users can deploy StaticPage instances in their language of choice, as
-seen in the [TypeScript example](examples/simple.index.ts).
+seen in the [TypeScript example](examples/simple/index.ts).
 
 
 ## Prerequisites
