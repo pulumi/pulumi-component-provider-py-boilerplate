@@ -1,5 +1,6 @@
 .pulumi
-**/bin/
+bin/venv
+sdk/**/bin/
 **/obj/
 **/node_modules/
 vendor/

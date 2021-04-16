@@ -13,14 +13,17 @@ SCHEMA_PATH     := ${WORKING_DIR}/schema.json
 generate:: gen_go_sdk gen_dotnet_sdk gen_nodejs_sdk gen_python_sdk
 
 build:: build_provider build_dotnet_sdk build_nodejs_sdk build_python_sdk
-
 install:: install_dotnet_sdk install_nodejs_sdk
 
 
 # Provider
 
-build_provider::
-	cd provider/cmd/${PROVIDER}/ && make
+build_provider::	bin/venv
+
+bin/venv::
+	python -m venv bin/venv
+	./bin/venv/bin/python -m pip install -r provider/cmd/pulumi-resource-xyz/requirements.txt
+	./bin/venv/bin/python -m pip install -e provider/cmd/pulumi-resource-xyz/
 
 
 # Go SDK
