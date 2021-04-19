@@ -20,13 +20,10 @@ install:: install_dotnet_sdk install_nodejs_sdk
 
 # Provider
 
-build_provider::	bin/venv bin/${PACK}_provider bin/requirements.txt bin/PulumiPlugin.yaml
+PROVIDER_FILES =  bin/PulumiPlugin.yaml bin/requirements.txt bin/run-provider.py
+PROVIDER_FILES += bin/pulumi-resource-${PACK}.cmd bin/pulumi-resource-${PACK}
 
-bin/requirements.txt:	${SRC}/requirements.txt
-	cp $< $@
-
-bin/PulumiPlugin.yaml:	${SRC}/PulumiPlugin.yaml
-	cp $< $@
+build_provider::	bin/venv bin/${PACK}_provider ${PROVIDER_FILES}
 
 bin/venv:		${SRC}/requirements.txt
 	rm -rf $@
@@ -36,6 +33,15 @@ bin/venv:		${SRC}/requirements.txt
 bin/${PACK}_provider:	${SRC}/
 	rm -rf $@
 	./bin/venv/bin/python -m pip install provider/cmd/pulumi-resource-${PACK}/ -t bin/
+
+bin/PulumiPlugin.yaml:			${SRC}/PulumiPlugin.yaml
+bin/requirements.txt:			${SRC}/requirements.txt
+bin/pulumi-resource-${PACK}.cmd:	${SRC}/pulumi-resource-${PACK}.cmd
+bin/pulumi-resource-${PACK}:		${SRC}/pulumi-resource-${PACK}
+bin/run-provider.py:			${SRC}/run-provider.py
+
+bin/%:
+	cp -f $< $@
 
 # Go SDK
 
