@@ -77,8 +77,29 @@ naming can be custom.
 
 ## Packaging
 
-TODO details on tarball packaging. Ideally Makefile contains targets
-for generating the tarballs.
+The `xyz` plugin can be packaged as a tarball for distribution:
+
+```bash
+$ make dist
+
+$ ls dist/
+pulumi-resource-xyz-v0.0.1-darwin-amd64.tar.gz
+pulumi-resource-xyz-v0.0.1-windows-amd64.tar.gz
+pulumi-resource-xyz-v0.0.1-linux-amd64.tar.gz
+```
+
+Users can install the plugin with:
+
+```bash
+pulumi plugin install resource xyz 0.0.1 --file dist/pulumi-resource-xyz-v0.0.1-darwin-amd64.tar.gz
+```
+
+The tarball only includes the `xyz_provider` sources. During the
+installation phase, `pulumi` will use the user's system Python command
+to rebuild a virtual environment and restore dependencies (such as
+Pulumi SDK).
+
+TODO explain custom server hosting in more detail.
 
 
 ## StaticPage Example
@@ -90,7 +111,7 @@ is `xyz:index:StaticPage` in the
 format of `<package>:<module>:<type>`. In this case, it's in the `xyz`
 package and `index` module. This is the same type token passed inside
 the implementation of `StaticPage` in
-[staticpage.py](provider/cmd/pulumi-resource-xyz/xyz_provider/staticpage.py#L46), 
+[staticpage.py](provider/cmd/pulumi-resource-xyz/xyz_provider/staticpage.py#L46),
 and also the same token referenced in `construct` in
 [provider.py](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py#L36).
 
@@ -107,9 +128,9 @@ the .NET, Node.js, and Python SDKs, dependencies are specified in the
 
 ### Implementation
 
-The key method to implement is 
-[construct](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py#L36) 
-on the `Provider` class. It receives `Inputs` representing arguments the user passed, 
+The key method to implement is
+[construct](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py#L36)
+on the `Provider` class. It receives `Inputs` representing arguments the user passed,
 and returns a `ConstructResult` with the new StaticPage resource `urn` an state.
 
 It is important that the implementation aligns the structure of inptus
