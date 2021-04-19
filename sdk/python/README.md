@@ -46,12 +46,24 @@ two things are needed to run `pulumi up`:
 ## Build and Test
 
 ```bash
+
 # Regenerate SDKs
 make generate
 
 # Build and install the provider and SDKs
 make build
 make install
+
+# Ensure the pulumi-provider-xyz script is on PATH (for testing)
+$ export PATH=$PATH:$PWD/bin
+
+# Test Node.js SDK
+$ cd examples/simple
+$ yarn install
+$ yarn link @pulumi/xyz
+$ pulumi stack init test
+$ pulumi config set aws:region us-east-1
+$ pulumi up
 
 ```
 
@@ -73,4 +85,32 @@ for generating the tarballs.
 
 ### Schema
 
+The component resource's type [token](schema.json#L4)
+is `xyz:index:StaticPage` in the
+format of `<package>:<module>:<type>`. In this case, it's in the `xyz`
+package and `index` module. This is the same type token passed inside
+the implementation of `StaticPage` in
+[staticpage.py](provider/cmd/pulumi-resource-xyz/xyz_provider/staticpage.py#L46), 
+and also the same token referenced in `construct` in
+[provider.py](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py#L36).
+
+This component has a required `indexContent` input property typed as
+`string`, and two required output properties: `bucket` and
+`websiteUrl`. Note that `bucket` is typed as the
+`aws:s3/bucket:Bucket` resource from the `aws` provider (in the schema
+the `/` is escaped as `%2F`).
+
+Since this component returns a type from the `aws` provider, each SDK
+must reference the associated Pulumi `aws` SDK for the language. For
+the .NET, Node.js, and Python SDKs, dependencies are specified in the
+[language section](schema.json#31) of the schema.
+
 ### Implementation
+
+The key method to implement is 
+[construct](provider/cmd/pulumi-resource-xyz/xyz_provider/provider.py#L36) 
+on the `Provider` class. It receives `Inputs` representing arguments the user passed, 
+and returns a `ConstructResult` with the new StaticPage resource `urn` an state.
+
+It is important that the implementation aligns the structure of inptus
+and outputs with the interface declared in `schema.json`.

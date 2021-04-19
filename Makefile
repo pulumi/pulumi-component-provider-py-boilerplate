@@ -10,6 +10,8 @@ VERSION_PATH    := provider/pkg/version.Version
 WORKING_DIR     := $(shell pwd)
 SCHEMA_PATH     := ${WORKING_DIR}/schema.json
 
+SRC             := provider/cmd/pulumi-resource-${PACK}
+
 generate:: gen_go_sdk gen_dotnet_sdk gen_nodejs_sdk gen_python_sdk
 
 build:: build_provider build_dotnet_sdk build_nodejs_sdk build_python_sdk
@@ -18,13 +20,22 @@ install:: install_dotnet_sdk install_nodejs_sdk
 
 # Provider
 
-build_provider::	bin/venv
+build_provider::	bin/venv bin/${PACK}_provider bin/requirements.txt bin/PulumiPlugin.yaml
 
-bin/venv::
-	python -m venv bin/venv
-	./bin/venv/bin/python -m pip install -r provider/cmd/pulumi-resource-xyz/requirements.txt
-	./bin/venv/bin/python -m pip install -e provider/cmd/pulumi-resource-xyz/
+bin/requirements.txt:	${SRC}/requirements.txt
+	cp $< $@
 
+bin/PulumiPlugin.yaml:	${SRC}/PulumiPlugin.yaml
+	cp $< $@
+
+bin/venv:		${SRC}/requirements.txt
+	rm -rf $@
+	python -m venv $@
+	./bin/venv/bin/python -m pip install -r $<
+
+bin/${PACK}_provider:	${SRC}/
+	rm -rf $@
+	./bin/venv/bin/python -m pip install provider/cmd/pulumi-resource-${PACK}/ -t bin/
 
 # Go SDK
 
@@ -85,3 +96,15 @@ build_python_sdk:: gen_python_sdk
 		sed -i.bak -e "s/\$${VERSION}/${PYPI_VERSION}/g" -e "s/\$${PLUGIN_VERSION}/${VERSION}/g" ./bin/setup.py && \
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
+
+
+# Output tarballs for plugin distribution. Example use:
+#
+# pulumi plugin install resource xyz 0.0.1 --file pulumi-resource-xyz-v0.0.1-linux-amd64.tar.gz
+
+dist::	build_provider
+	rm -rf dist
+	mkdir -p dist
+	(cd bin && tar --gzip --exclude venv -cf ../dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz .)
+	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz
+	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz

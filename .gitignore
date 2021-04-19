@@ -1,5 +1,9 @@
 .pulumi
 bin/venv
+bin/requirements.txt
+bin/*.yaml
+bin/*_provider
+bin/*egg-info*
 sdk/**/bin/
 **/obj/
 **/node_modules/
