@@ -1,2 +1,2 @@
-pulumi>=3.0.0rc1
-pulumi_aws>=4.0.0rc1
+pulumi>=3.0.0
+pulumi_aws>=4.0.0
