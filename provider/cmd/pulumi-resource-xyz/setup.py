@@ -1,11 +1,23 @@
 from distutils.core import setup
+import os.path
+
+
+PKG = 'xyz_provider'
+
+
+def read_version():
+    with open(os.path.join(os.path.dirname(__file__), PKG, 'VERSION')) as version_file:
+        version = version_file.read().strip()
+    return version
+
 
 setup(
-    name='xyz_provider',
-    version='0.0.1',
+    name=PKG,
+    version=read_version(),
     description='XYZ Pulumi Provider',
-    packages=['xyz_provider'],
-    package_data={'xyz_provider': ['py.typed']},
+    packages=[PKG],
+    package_data={PKG: ['py.typed', 'VERSION']},
     zip_safe=False)
+
 
 ## TODO Correct Pulumi SDK dependency information

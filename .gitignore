@@ -1,3 +1,4 @@
+VERSION
 .pulumi
 bin/
 sdk/**/bin/
