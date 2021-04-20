@@ -111,6 +111,7 @@ build_python_sdk:: gen_python_sdk
 dist::	build_provider
 	rm -rf dist
 	mkdir -p dist
-	(cd bin && tar --gzip --exclude venv -cf ../dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz .)
+	(cd bin && tar --gzip --exclude venv --exclude pulumi-resource-${PACK}.cmd -cf ../dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz .)
 	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz
-	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz
+	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz
+	(cd bin && tar --gzip --exclude venv --exclude pulumi-resource-${PACK} -cf ../dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz .)
