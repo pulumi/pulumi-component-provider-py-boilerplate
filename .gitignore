@@ -1,3 +1,4 @@
+bin
 .pulumi
 sdk/**/bin/
 **/obj/

@@ -32,7 +32,7 @@ bin/venv:		${SRC}/requirements.txt
 
 bin/${PACK}_provider:	${SRC}/
 	rm -rf $@
-	./bin/venv/bin/python -m pip install provider/cmd/pulumi-resource-${PACK}/ -t bin/
+	./bin/venv/bin/python -m pip install --no-deps provider/cmd/pulumi-resource-${PACK}/ -t bin/
 
 bin/PulumiPlugin.yaml:			${SRC}/PulumiPlugin.yaml
 bin/requirements.txt:			${SRC}/requirements.txt
