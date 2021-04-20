@@ -1,5 +1,4 @@
 .pulumi
-bin/
 sdk/**/bin/
 **/obj/
 **/node_modules/
