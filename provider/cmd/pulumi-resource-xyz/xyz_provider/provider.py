@@ -18,14 +18,14 @@ from pulumi import Inputs, ResourceOptions
 from pulumi.provider import ConstructResult
 import pulumi.provider as provider
 
+import xyz_provider
 from xyz_provider.staticpage import StaticPage, StaticPageArgs
 
 
 class Provider(provider.Provider):
-    VERSION = "0.0.1"
 
     def __init__(self) -> None:
-        super().__init__(Provider.VERSION)
+        super().__init__(xyz_provider.__version__)
 
     def construct(self,
                   name: str,
