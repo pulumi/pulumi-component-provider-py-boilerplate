@@ -6,6 +6,9 @@ setup(
     description='XYZ Pulumi Provider',
     packages=['xyz_provider'],
     package_data={'xyz_provider': ['py.typed']},
-    zip_safe=False)
-
-## TODO Correct Pulumi SDK dependency information
+    zip_safe=False,
+    install_requires=[
+        'pulumi>=3.0.0',
+        'pulumi_aws>=4.0.0',
+    ],
+)
