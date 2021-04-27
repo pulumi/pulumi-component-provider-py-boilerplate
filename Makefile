@@ -27,7 +27,7 @@ build_provider::	bin/venv bin/${PACK}_provider ${PROVIDER_FILES}
 
 bin/venv:		${SRC}/requirements.txt
 	rm -rf $@
-	python -m venv $@
+	python3 -m venv $@
 	./bin/venv/bin/python -m pip install -r $<
 
 bin/${PACK}_provider:	${SRC}/	${SRC}/${PACK}_provider/VERSION
@@ -49,7 +49,7 @@ ${SRC}/${PACK}_provider/VERSION:
 # Go SDK
 
 gen_go_sdk::
-	rm -rf go
+	rm -rf sdk/go
 	cd provider/cmd/${CODEGEN} && go run . go ../../../sdk/go ${SCHEMA_PATH}
 
 
