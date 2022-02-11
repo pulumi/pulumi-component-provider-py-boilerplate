@@ -25,7 +25,7 @@ from xyz_provider.staticpage import StaticPage, StaticPageArgs
 class Provider(provider.Provider):
 
     def __init__(self) -> None:
-        super().__init__(xyz_provider.__version__)
+        super().__init__(xyz_provider.__version__, xyz_provider.__schema__)
 
     def construct(self,
                   name: str,
