@@ -20,6 +20,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'pulumi>=3.0.0',
-        'pulumi_aws>=4.0.0',
+        'pulumi_aws>=5.0.0',
     ],
 )
