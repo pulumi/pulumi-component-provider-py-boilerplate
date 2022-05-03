@@ -1,8 +1,14 @@
-# xyz Pulumi Component Provider (Python)
+# Pulumi Component Boilerplate (Python)
 
-This repo builds a working Pulumi component provider in Python. You
-can use it as boilerplate for creating your own provider. Simply
-search-replace `xyz` with your chosen name.
+This repository builds a working Pulumi component in Python. You
+can use it as a boilerplate for creating your own component provider by search-replacing `xyz` with your chosen name.
+
+### Background
+This repository is part of the [guide for authoring and publishing a Pulumi Package](https://www.pulumi.com/docs/guides/pulumi-packages/how-to-author).
+
+Learn about the concepts behind [Pulumi Packages](https://www.pulumi.com/docs/guides/pulumi-packages/#pulumi-packages) and, more specifically, [Pulumi Components](https://www.pulumi.com/docs/intro/concepts/resources/components/)
+
+## Sample xyz Component Provider
 
 Pulumi component providers make
 [component resources](https://www.pulumi.com/docs/intro/concepts/resources/#components)
@@ -101,6 +107,9 @@ Pulumi SDK).
 
 TODO explain custom server hosting in more detail.
 
+## Configuring CI and releases
+
+1. Follow the instructions laid out in the [deployment templates](./deployment-templates/README-DEPLOYMENT.md).
 
 ## StaticPage Example
 
