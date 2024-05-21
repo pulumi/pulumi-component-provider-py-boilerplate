@@ -4,7 +4,6 @@ PACK            := xyz
 PROJECT         := github.com/pulumi/pulumi-${PACK}
 
 PROVIDER        := pulumi-resource-${PACK}
-CODEGEN         := pulumi-gen-${PACK}
 VERSION_PATH    := provider/pkg/version.Version
 
 WORKING_DIR     := $(shell pwd)
@@ -12,7 +11,13 @@ SCHEMA_PATH     := ${WORKING_DIR}/schema.json
 
 SRC             := provider/cmd/pulumi-resource-${PACK}
 
+# The pulumi binary to use during generation
+PULUMI := .pulumi/bin/pulumi
+
+export PULUMI_IGNORE_AMBIENT_PLUGINS = true
+
 generate:: gen_go_sdk gen_dotnet_sdk gen_nodejs_sdk gen_python_sdk
+gen_sdk_prerequisites: $(PULUMI)
 
 build:: build_provider build_dotnet_sdk build_nodejs_sdk build_python_sdk
 install:: install_dotnet_sdk install_nodejs_sdk
@@ -49,16 +54,17 @@ ${SRC}/${PACK}_provider/VERSION:
 
 # Go SDK
 
-gen_go_sdk::
+gen_go_sdk: gen_sdk_prerequisites
 	rm -rf sdk/go
-	cd provider/cmd/${CODEGEN} && go run . go ../../../sdk/go ${SCHEMA_PATH}
+	$(PULUMI) package gen-sdk ${SCHEMA_PATH} --language go
 
 
 # .NET SDK
 
-gen_dotnet_sdk::
+gen_dotnet_sdk: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
+gen_dotnet_sdk: gen_sdk_prerequisites
 	rm -rf sdk/dotnet
-	cd provider/cmd/${CODEGEN} && go run . dotnet ../../../sdk/dotnet ${SCHEMA_PATH}
+	$(PULUMI) package gen-sdk ${SCHEMA_PATH} --language dotnet
 
 build_dotnet_sdk:: DOTNET_VERSION := ${VERSION}
 build_dotnet_sdk:: gen_dotnet_sdk
@@ -74,16 +80,16 @@ install_dotnet_sdk:: build_dotnet_sdk
 
 # Node.js SDK
 
-gen_nodejs_sdk::
+gen_nodejs_sdk: VERSION := $(shell pulumictl get version --language javascript)
+gen_nodejs_sdk: gen_sdk_prerequisites
 	rm -rf sdk/nodejs
-	cd provider/cmd/${CODEGEN} && go run . nodejs ../../../sdk/nodejs ${SCHEMA_PATH}
+	$(PULUMI) package gen-sdk ${SCHEMA_PATH} --language nodejs
 
 build_nodejs_sdk:: gen_nodejs_sdk
 	cd sdk/nodejs/ && \
 		yarn install && \
 		yarn run tsc --version && \
 		yarn run tsc && \
-		cp -R scripts/ bin && \
 		cp ../../README.md ../../LICENSE package.json yarn.lock ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json && \
 		rm ./bin/package.json.bak
@@ -94,9 +100,10 @@ install_nodejs_sdk:: build_nodejs_sdk
 
 # Python SDK
 
-gen_python_sdk::
+gen_python_sdk: PYPI_VERSION := $(shell pulumictl get version --language python)
+gen_python_sdk: gen_sdk_prerequisites
 	rm -rf sdk/python
-	cd provider/cmd/${CODEGEN} && go run . python ../../../sdk/python ${SCHEMA_PATH}
+	$(PULUMI) package gen-sdk ${SCHEMA_PATH} --language python
 	cp ${WORKING_DIR}/README.md sdk/python
 
 build_python_sdk:: PYPI_VERSION := ${VERSION}
@@ -120,3 +127,21 @@ dist::	build_provider
 	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz
 	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz
 	(cd bin && tar --gzip --exclude venv --exclude pulumi-resource-${PACK} -cf ../dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz .)
+
+
+# Keep the version of the pulumi binary used for code generation in sync with the version
+# of the dependency used by github.com/pulumi/pulumi-pulumiservice/provider
+
+$(PULUMI): HOME := $(WORKING_DIR)
+$(PULUMI): provider/go.mod
+	@ PULUMI_VERSION="$$(cd provider && go list -m github.com/pulumi/pulumi/pkg/v3 | awk '{print $$2}')"; \
+	if [ -x $(PULUMI) ]; then \
+		CURRENT_VERSION="$$($(PULUMI) version)"; \
+		if [ "$${CURRENT_VERSION}" != "$${PULUMI_VERSION}" ]; then \
+			echo "Upgrading $(PULUMI) from $${CURRENT_VERSION} to $${PULUMI_VERSION}"; \
+			rm $(PULUMI); \
+		fi; \
+	fi; \
+	if ! [ -x $(PULUMI) ]; then \
+		curl -fsSL https://get.pulumi.com | sh -s -- --version "$${PULUMI_VERSION#v}"; \
+	fi
