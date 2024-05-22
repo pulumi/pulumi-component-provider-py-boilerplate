@@ -105,16 +105,19 @@ gen_python_sdk: gen_sdk_prerequisites
 	rm -rf sdk/python
 	$(PULUMI) package gen-sdk ${SCHEMA_PATH} --language python
 	cp ${WORKING_DIR}/README.md sdk/python
+	cp ${WORKING_DIR}/misc/pyproject.toml sdk/python
 
-build_python_sdk:: PYPI_VERSION := ${VERSION}
+build_python_sdk:: PYPI_VERSION := $(shell pulumictl get version --language python)
 build_python_sdk:: gen_python_sdk
 	cd sdk/python/ && \
-		python3 setup.py clean --all 2>/dev/null && \
+		printf "module fake_python_module // Exclude this directory from Go tools\n\ngo 1.17\n" > go.mod && \
 		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
-		sed -i.bak -e "s/\$${VERSION}/${PYPI_VERSION}/g" -e "s/\$${PLUGIN_VERSION}/${VERSION}/g" ./bin/setup.py && \
-		rm ./bin/setup.py.bak && \
-		cd ./bin && python3 setup.py build sdist
-
+		sed -i.bak -e 's/^  version = .*/  version = "$(PYPI_VERSION)"/g' ./bin/pyproject.toml && \
+		rm ./bin/pyproject.toml.bak && rm ./bin/go.mod && \
+		python3 -m venv venv && \
+		./venv/bin/python -m pip install build && \
+		cd ./bin && \
+		../venv/bin/python -m build .
 
 # Output tarballs for plugin distribution. Example use:
 #
@@ -130,7 +133,7 @@ dist::	build_provider
 
 
 # Keep the version of the pulumi binary used for code generation in sync with the version
-# of the dependency used by github.com/pulumi/pulumi-pulumiservice/provider
+# of the dependency used by this provider.
 
 $(PULUMI): HOME := $(WORKING_DIR)
 $(PULUMI): provider/go.mod
