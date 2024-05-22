@@ -60,9 +60,6 @@ make generate
 make build
 make install
 
-# Ensure the pulumi-provider-xyz script is on PATH (for testing)
-$ export PATH=$PATH:$PWD/bin
-
 # Test Node.js SDK
 $ cd examples/simple
 $ yarn install

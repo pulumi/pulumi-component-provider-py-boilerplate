@@ -13,7 +13,7 @@ package-lock.json
 **/version.txt
 **/dist
 nuget/
-
+venv
 ci-scripts/
 *.tar.gz
 
