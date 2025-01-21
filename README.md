@@ -48,6 +48,21 @@ two things are needed to run `pulumi up`:
 - Node.js (to build the Node SDK)
 - .NET Code SDK (to build the .NET SDK)
 
+1. Run the following command to update files to use the name of your provider (third-party: use your GitHub organization/username):
+
+    ```bash
+    make prepare NAME=foo REPOSITORY=github.com/pulumi ORG=myorg
+    ```
+
+   This will do the following:
+   - rename folders in `provider/cmd` to `pulumi-resource-{NAME}`
+   - replace dependencies in `provider/go.mod` to reflect your repository name
+   - find and replace all instances of the boilerplate `xyz` with the `NAME` of your provider.
+   - replace all instances of the `github.com/pulumi` repository with the `REPOSITORY` location
+
+   
+```
+
 
 ## Build and Test
 

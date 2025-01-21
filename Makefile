@@ -16,6 +16,33 @@ PULUMI := .pulumi/bin/pulumi
 
 export PULUMI_IGNORE_AMBIENT_PLUGINS = true
 
+prepare::
+	@if test -z "${NAME}"; then echo "NAME not set"; exit 1; fi
+	@if test -z "${REPOSITORY}"; then echo "REPOSITORY not set"; exit 1; fi
+	@if test ! -d "provider/cmd/pulumi-resource-xyz"; then echo "Project already prepared"; exit 1; fi # SED_SKIP
+
+	mv "provider/cmd/pulumi-resource-xyz/pulumi-resource-xyz" provider/cmd/pulumi-resource-xyz/pulumi-resource-${NAME} # SED_SKIP
+	mv "provider/cmd/pulumi-resource-xyz/pulumi-resource-xyz.cmd" provider/cmd/pulumi-resource-xyz/pulumi-resource-${NAME}.cmd # SED_SKIP
+	mv "provider/cmd/pulumi-resource-xyz/xyz_provider" provider/cmd/pulumi-resource-xyz/${NAME}_provider # SED_SKIP
+	mv "provider/cmd/pulumi-resource-xyz" provider/cmd/pulumi-resource-${NAME} # SED_SKIP
+	
+	if [ "${OS}" != "Darwin" ]; then \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,pulumi-resource-xyz,pulumi-resource-${NAME},g' {} \; &> /dev/null \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,xyz_provider,${NAME}_provider,g' {} \; &> /dev/null \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,github.com/pulumi,${REPOSITORY},g' {} \; &> /dev/null \
+	fi
+
+	# In MacOS the -i parameter needs an empty string to execute in place.
+	if [ "${OS}" = "Darwin" ]; then \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,pulumi-resource-xyz,pulumi-resource-${NAME},g' {} \; &> /dev/null; \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,xyz_provider,${NAME}_provider,g' {} \; &> /dev/null; \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,github.com/pulumix,${REPOSITORY},g' {} \; &> /dev/null; \
+	fi
+
+	sed -i '/SED_SKIP/!s,\(PACK[[:space:]]*:=\)[[:space:]]*xyz,\1 ${NAME},g' Makefile
+	sed -i '/^prepare::/,/^[[:alnum:]]/ { /^prepare::/! { /^[[:alnum:]]/!d; } }; /^prepare::$$/d' Makefile
+
+
 generate:: gen_go_sdk gen_dotnet_sdk gen_nodejs_sdk gen_python_sdk
 gen_sdk_prerequisites: $(PULUMI)
 
