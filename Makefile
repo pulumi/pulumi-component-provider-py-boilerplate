@@ -27,16 +27,16 @@ prepare::
 	mv "provider/cmd/pulumi-resource-xyz" provider/cmd/pulumi-resource-${NAME} # SED_SKIP
 	
 	if [ "${OS}" != "Darwin" ]; then \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,pulumi-resource-xyz,pulumi-resource-${NAME},g' {} \; &> /dev/null \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,xyz_provider,${NAME}_provider,g' {} \; &> /dev/null \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,github.com/pulumi,${REPOSITORY},g' {} \; &> /dev/null \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,pulumi-resource-xyz,pulumi-resource-${NAME},g' {} \; &> /dev/null; \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,xyz_provider,${NAME}_provider,g' {} \; &> /dev/null; \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,github.com/pulumi,${REPOSITORY},g' {} \; &> /dev/null; \
 	fi
 
 	# In MacOS the -i parameter needs an empty string to execute in place.
 	if [ "${OS}" = "Darwin" ]; then \
 		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,pulumi-resource-xyz,pulumi-resource-${NAME},g' {} \; &> /dev/null; \
 		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,xyz_provider,${NAME}_provider,g' {} \; &> /dev/null; \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,github.com/pulumix,${REPOSITORY},g' {} \; &> /dev/null; \
+		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,github.com/pulumi,${REPOSITORY},g' {} \; &> /dev/null; \
 	fi
 
 	sed -i '/SED_SKIP/!s,\(PACK[[:space:]]*:=\)[[:space:]]*xyz,\1 ${NAME},g' Makefile
