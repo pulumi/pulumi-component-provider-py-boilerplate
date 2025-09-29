@@ -1,22 +1,2 @@
-bin
-VERSION
-.pulumi
-sdk/**/bin/
-**/obj/
-**/node_modules/
-vendor/
-**/Pulumi.*.yaml
-**/yarn-error.log
-yarn.lock
-package-lock.json
-.idea/
-**/version.txt
-**/dist
-nuget/
-venv
-ci-scripts/
-*.tar.gz
-
-# This is an artifact only so that we can pass the
-# schema for the provider GetSchema gRPC request
-/provider/cmd/pulumi-resource-*/*/schema.json
+**/__pycache__/
+**/.DS_Store

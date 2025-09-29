@@ -1,9 +1,0 @@
-name: simple
-runtime: nodejs
-description: A simple xyz example
-
-# While developing, instruct pulumi to find the xyz binary at this location.
-plugins:
-  providers:
-    - name: xyz
-      path: ../../bin
